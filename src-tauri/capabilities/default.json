@@ -1,0 +1,11 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permisos base para las ventanas de YappyLike (welcome, settings, player).",
+  "windows": ["main", "welcome", "settings", "player"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-close",
+    "core:window:allow-start-dragging"
+  ]
+}

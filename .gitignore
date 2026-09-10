@@ -1,0 +1,47 @@
+# Rust / Cargo
+/target/
+src-tauri/target/
+**/*.rs.bk
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Tauri
+src-tauri/gen/
+
+# Modelos descargados (se bajan en primer arranque, no se versionan)
+models/
+*.onnx
+*.bin
+
+# Artefactos de prueba (audio generado por los examples)
+*.wav
+
+# Config / logs locales de runtime
+/config/
+/logs/
+
+# Secretos y credenciales locales
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+secrets*.json
+
+# Artefactos de distribución (M8): instalador y portable empaquetados
+/dist-release/
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editor
+.vscode/
+.idea/

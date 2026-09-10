@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bienvenido a YappyLike</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f3f3f3;
+        --fg: #1a1a1a;
+        --sub: #5a5a5a;
+        --accent: #0067c0;
+        --track: #d6d6d6;
+        --card: #ffffff;
+        --border: #e2e2e2;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #202020;
+          --fg: #f2f2f2;
+          --sub: #a9a9a9;
+          --accent: #4cc2ff;
+          --track: #3a3a3a;
+          --card: #2b2b2b;
+          --border: #383838;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      main {
+        width: 100%;
+        max-width: 460px;
+        padding: 24px;
+      }
+      h1 { font-size: 20px; margin: 0 0 6px; font-weight: 600; }
+      p { margin: 0 0 14px; color: var(--sub); font-size: 13px; line-height: 1.5; }
+      .path {
+        font-family: "Cascadia Code", Consolas, monospace;
+        font-size: 12px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 8px 10px;
+        color: var(--sub);
+        word-break: break-all;
+        margin-bottom: 16px;
+      }
+      .bar {
+        height: 8px;
+        background: var(--track);
+        border-radius: 999px;
+        overflow: hidden;
+        margin: 6px 0 8px;
+      }
+      .fill {
+        height: 100%;
+        width: 0%;
+        background: var(--accent);
+        border-radius: 999px;
+        transition: width 0.15s ease;
+      }
+      .status { font-size: 12px; color: var(--sub); min-height: 16px; }
+      .row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+      button {
+        font: inherit;
+        font-size: 13px;
+        padding: 8px 18px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--fg);
+        cursor: pointer;
+      }
+      button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+      button:disabled { opacity: 0.5; cursor: default; }
+      .hidden { display: none; }
+      .done h1::before { content: "✓ "; color: #2ea043; }
+    </style>
+  </head>
+  <body>
+    <main id="root">
+      <h1 id="title">Bienvenido a YappyLike</h1>
+      <p id="intro">
+        Para leer texto en voz alta, YappyLike necesita descargar el modelo de voz
+        (aprox. <span id="size">400</span> MB) una sola vez. Se guardará en:
+      </p>
+      <div class="path" id="target">…</div>
+
+      <div id="progress-area" class="hidden">
+        <div class="bar"><div class="fill" id="fill"></div></div>
+        <div class="status" id="status">Preparando…</div>
+      </div>
+
+      <div class="row">
+        <button id="cancel" class="hidden">Cancelar</button>
+        <button id="start" class="primary">Descargar</button>
+        <button id="close" class="primary hidden">Empezar a usar</button>
+        <button id="retry" class="hidden">Reintentar</button>
+      </div>
+    </main>
+    <script type="module" src="/src/welcome.ts"></script>
+  </body>
+</html>

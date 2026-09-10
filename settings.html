@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YappyLike — Ajustes</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f3f3f3;
+        --fg: #1a1a1a;
+        --sub: #5a5a5a;
+        --accent: #0067c0;
+        --accent-fg: #ffffff;
+        --track: #d6d6d6;
+        --card: #ffffff;
+        --border: #e2e2e2;
+        --ok: #2ea043;
+        --err: #d13438;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #202020;
+          --fg: #f2f2f2;
+          --sub: #a9a9a9;
+          --accent: #4cc2ff;
+          --accent-fg: #05243a;
+          --track: #3a3a3a;
+          --card: #2b2b2b;
+          --border: #383838;
+          --ok: #3fb950;
+          --err: #f85149;
+        }
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+        font-size: 13px;
+        display: flex;
+        flex-direction: column;
+      }
+      header {
+        padding: 14px 20px 8px;
+      }
+      header h1 { font-size: 18px; margin: 0; font-weight: 600; }
+      header p { margin: 4px 0 0; color: var(--sub); font-size: 12px; }
+      main {
+        flex: 1;
+        overflow-y: auto;
+        padding: 8px 20px 12px;
+      }
+      section {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+      }
+      section h2 {
+        font-size: 13px;
+        margin: 0 0 10px;
+        font-weight: 600;
+        color: var(--fg);
+        letter-spacing: 0.02em;
+      }
+      .field {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 8px 0;
+        min-height: 28px;
+      }
+      .field label { color: var(--fg); }
+      .field .hint { color: var(--sub); font-size: 11px; }
+      .col { flex-direction: column; align-items: stretch; }
+      select, input[type="text"] {
+        font: inherit;
+        background: var(--bg);
+        color: var(--fg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 5px 8px;
+        min-width: 180px;
+      }
+      input[type="range"] { width: 180px; accent-color: var(--accent); }
+      input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); }
+      .rangewrap { display: flex; align-items: center; gap: 10px; }
+      .rangeval { min-width: 42px; text-align: right; color: var(--sub); font-variant-numeric: tabular-nums; }
+      .hotkey {
+        min-width: 180px;
+        text-align: center;
+        cursor: pointer;
+        user-select: none;
+      }
+      .hotkey.capturing { border-color: var(--accent); color: var(--accent); }
+      .conflict { color: var(--err); font-size: 11px; margin-top: 2px; text-align: right; min-height: 14px; }
+      .repl-summary { color: var(--sub); }
+      /* Modal del diccionario de pronunciación */
+      .modal {
+        position: fixed; inset: 0; z-index: 50;
+        background: rgba(0, 0, 0, 0.45);
+        display: flex; align-items: center; justify-content: center;
+        padding: 20px;
+      }
+      .modal.hidden { display: none; }
+      .modal-box {
+        background: var(--card); border: 1px solid var(--border);
+        border-radius: 10px; width: 100%; max-width: 560px;
+        max-height: 100%; display: flex; flex-direction: column;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+      }
+      .modal-head {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 16px; border-bottom: 1px solid var(--border);
+      }
+      .modal-head h3 { margin: 0; font-size: 15px; font-weight: 600; }
+      .modal-x { padding: 2px 9px; }
+      .modal-toolbar { display: flex; gap: 8px; padding: 12px 16px 8px; }
+      .modal-toolbar #repl_search { flex: 1; min-width: 0; }
+      #repl_import_panel { padding: 0 16px 8px; }
+      #repl_import_panel.hidden { display: none; }
+      #repl_csv {
+        width: 100%; min-height: 84px; font: inherit; resize: vertical;
+        background: var(--bg); color: var(--fg);
+        border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px;
+      }
+      .import-actions { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+      .import-actions .hint { flex: 1; }
+      .modal-table-wrap { overflow-y: auto; padding: 0 16px; flex: 1; }
+      table#repl_table { width: 100%; border-collapse: collapse; }
+      table#repl_table th {
+        text-align: left; font-size: 11px; color: var(--sub); font-weight: 600;
+        padding: 4px 6px; position: sticky; top: 0; background: var(--card);
+      }
+      table#repl_table td { padding: 3px 6px; }
+      table#repl_table input[type="text"] { width: 100%; min-width: 0; text-align: left; }
+      table#repl_table .repl-del { padding: 2px 8px; color: var(--sub); }
+      .col-en { width: 28px; }
+      .col-del { width: 34px; }
+      .modal-foot {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 10px 16px; border-top: 1px solid var(--border);
+      }
+      .modal-foot #repl_count { color: var(--sub); font-size: 12px; }
+      button {
+        font: inherit;
+        padding: 6px 14px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--fg);
+        cursor: pointer;
+      }
+      button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+      button:disabled { opacity: 0.5; cursor: default; }
+      .privacy { color: var(--sub); font-size: 12px; line-height: 1.5; margin: 0; }
+      .engine-row { color: var(--sub); }
+      .engine-row b { color: var(--fg); font-weight: 600; }
+      footer {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px;
+        border-top: 1px solid var(--border);
+        background: var(--bg);
+      }
+      footer .status { flex: 1; font-size: 12px; color: var(--sub); }
+      footer .status.ok { color: var(--ok); }
+      footer .status.err { color: var(--err); }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Ajustes de YappyLike</h1>
+      <p>Los cambios se aplican al guardar.</p>
+    </header>
+
+    <main>
+      <!-- General -->
+      <section>
+        <h2>General</h2>
+        <div class="field">
+          <label for="start_with_windows">Iniciar con Windows</label>
+          <input type="checkbox" id="start_with_windows" />
+        </div>
+        <div class="field">
+          <label for="launch_minimized">Arrancar minimizado
+            <span class="hint">(la app vive en la bandeja)</span>
+          </label>
+          <input type="checkbox" id="launch_minimized" />
+        </div>
+        <div class="field">
+          <label for="show_notifications">Mostrar notificaciones</label>
+          <input type="checkbox" id="show_notifications" />
+        </div>
+      </section>
+
+      <!-- Voice -->
+      <section>
+        <h2>Voz</h2>
+        <div class="field">
+          <label for="voice">Voz</label>
+          <select id="voice"></select>
+        </div>
+        <div class="field">
+          <label for="lang">Idioma</label>
+          <select id="lang">
+            <option value="na">Automático (agnóstico)</option>
+            <option value="es">Español</option>
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="speed">Velocidad</label>
+          <div class="rangewrap">
+            <input type="range" id="speed" min="0.9" max="1.5" step="0.05" />
+            <span class="rangeval" id="speed_val">1.05×</span>
+          </div>
+        </div>
+        <div class="field">
+          <span class="hint">Escucha una muestra con estos ajustes</span>
+          <button id="preview">▶ Preview</button>
+        </div>
+      </section>
+
+      <!-- Hotkeys -->
+      <section>
+        <h2>Atajos</h2>
+        <div class="field">
+          <label>Leer selección</label>
+          <input type="text" class="hotkey" id="hk_read" readonly />
+        </div>
+        <div class="field">
+          <label>Leer portapapeles</label>
+          <input type="text" class="hotkey" id="hk_read_clipboard" readonly />
+        </div>
+        <div class="field">
+          <label>Detener</label>
+          <input type="text" class="hotkey" id="hk_stop" readonly />
+        </div>
+        <div class="field">
+          <label>Pausar / Reanudar</label>
+          <input type="text" class="hotkey" id="hk_pause_resume" readonly />
+        </div>
+        <div class="field">
+          <label>Ajustes</label>
+          <input type="text" class="hotkey" id="hk_settings" readonly />
+        </div>
+        <p class="hint">Haz clic en un atajo y pulsa la nueva combinación (Esc para cancelar).</p>
+      </section>
+
+      <!-- Engine -->
+      <section>
+        <h2>Motor</h2>
+        <div class="field engine-row">
+          <span>Versión</span><b id="app_version">…</b>
+        </div>
+        <div class="field engine-row">
+          <span>Backend</span><b>CPU</b>
+        </div>
+        <div class="field col engine-row">
+          <span>Ubicación del modelo</span>
+          <span id="model_dir" style="word-break: break-all; color: var(--sub);">…</span>
+        </div>
+        <div class="field engine-row">
+          <span>Estado</span><b id="engine_state">…</b>
+        </div>
+      </section>
+
+      <!-- Audio -->
+      <section>
+        <h2>Audio</h2>
+        <div class="field">
+          <label for="device">Dispositivo de salida</label>
+          <select id="device"></select>
+        </div>
+        <div class="field">
+          <label for="volume">Volumen</label>
+          <div class="rangewrap">
+            <input type="range" id="volume" min="0" max="1" step="0.05" />
+            <span class="rangeval" id="volume_val">100%</span>
+          </div>
+        </div>
+        <div class="field col">
+          <label for="export_dir">Carpeta de audios exportados
+            <span class="hint">(vacío = Documentos\YappyLike)</span>
+          </label>
+          <input type="text" id="export_dir" placeholder="Documentos\YappyLike" />
+        </div>
+      </section>
+
+      <!-- Pronunciación -->
+      <section>
+        <h2>Pronunciación</h2>
+        <p class="hint">
+          Reemplaza términos antes de leerlos (p. ej. anglicismos). Coincide por
+          palabra completa, sin distinguir mayúsculas. El reemplazo puede sonar
+          como quieras (<em>deadline → dedláin</em>) o ser una traducción
+          (<em>deadline → fecha límite</em>).
+        </p>
+        <div class="field">
+          <span class="repl-summary" id="repl_summary">…</span>
+          <button id="repl_manage" type="button">Gestionar…</button>
+        </div>
+      </section>
+
+      <!-- Privacy -->
+      <section>
+        <h2>Privacidad</h2>
+        <p class="privacy">
+          Todo el procesamiento es <b>100% local</b>. YappyLike no envía tu texto a
+          ningún servidor, no usa telemetría ni analítica, y no hace ninguna
+          petición de red tras la descarga inicial del modelo. Tu texto nunca sale
+          de tu equipo.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <span class="status" id="status"></span>
+      <button id="cancel">Cerrar</button>
+      <button id="save" class="primary">Guardar</button>
+    </footer>
+
+    <!-- Modal: diccionario de pronunciación -->
+    <div id="repl_modal" class="modal hidden">
+      <div class="modal-box">
+        <div class="modal-head">
+          <h3>Diccionario de pronunciación</h3>
+          <button id="repl_close" class="modal-x" type="button">✕</button>
+        </div>
+        <div class="modal-toolbar">
+          <input type="text" id="repl_search" placeholder="Buscar palabra original (p. ej. login)…" />
+          <button id="repl_import_toggle" type="button">Importar CSV</button>
+          <button id="repl_addrow" type="button">+ Fila</button>
+        </div>
+        <div id="repl_import_panel" class="hidden">
+          <textarea id="repl_csv" placeholder="Una por línea: palabra,reemplazo&#10;login,lóguin&#10;deadline,dedláin"></textarea>
+          <div class="import-actions">
+            <span class="hint">Formato <code>palabra,reemplazo</code>. Si la palabra ya existe, se actualiza (sin duplicar).</span>
+            <button id="repl_import_do" type="button">Importar</button>
+          </div>
+          <div class="import-actions"><span class="status" id="repl_import_status"></span></div>
+        </div>
+        <div class="modal-table-wrap">
+          <table id="repl_table">
+            <thead>
+              <tr>
+                <th class="col-en"></th>
+                <th>Palabra</th>
+                <th>Reemplazo</th>
+                <th class="col-del"></th>
+              </tr>
+            </thead>
+            <tbody id="repl_tbody"></tbody>
+          </table>
+        </div>
+        <div class="modal-foot">
+          <span id="repl_count"></span>
+          <button id="repl_done" class="primary" type="button">Hecho</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/settings.ts"></script>
+  </body>
+</html>

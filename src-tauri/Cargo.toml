@@ -1,0 +1,80 @@
+[package]
+name = "yappylike"
+version = "0.3.0"
+description = "YappyLike — TTS local por hotkey"
+authors = ["YappyLike"]
+edition = "2021"
+
+[lib]
+# El sufijo `_lib` evita el conflicto de nombres bin/lib en Windows.
+# Ver https://github.com/rust-lang/cargo/issues/8519
+name = "yappylike_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
+tauri-plugin-single-instance = "2"
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-notification = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-appender = "0.2"
+
+# --- M4: motor TTS (Supertonic 3) --- #
+# ONNX Runtime (decisión §4, CPU EP). Se fija a la misma rc que el ejemplo
+# oficial de Supertonic para que el port compile igual. `download-binaries`
+# (feature por defecto) baja ONNX Runtime en build.
+ort = "=2.0.0-rc.7"
+# `ort` rc.7 admite `ort-sys` hasta rc.13; esa rc nueva exige una feature TLS
+# que rc.7 no reenvía. Se fija `ort-sys` a rc.7 para casar con `ort`.
+ort-sys = "=2.0.0-rc.7"
+# Debe coincidir con la versión de ndarray que usa `ort` (para que
+# `Value::from_array` acepte nuestros arrays). `ort` rc.7 arrastra 0.16.
+ndarray = "0.16"
+# Muestreo del latente ruidoso (port del ejemplo oficial).
+rand = "0.8"
+rand_distr = "0.4"
+# Normalización de texto del port (NFKD + regex).
+unicode-normalization = "0.1"
+regex = "1"
+# Reproducción de audio local (play/stop); base de la cola de M5.
+rodio = "0.20"
+# Verificación SHA-256 del manifiesto de modelos (§3).
+sha2 = "0.10"
+# Descarga HTTPS de assets (§3); TLS vía rustls, sin arrastrar OpenSSL.
+ureq = "2"
+
+# --- M6: settings + persistencia --- #
+# Serialización de la config a TOML (§6). Un parser TOML robusto no son ~40
+# líneas propias; se justifica la dependencia.
+toml = "0.8"
+
+# Captura de selección (M2): portapapeles + SendInput vía Win32. Se fija la
+# misma major que ya trae Tauri en el árbol para no duplicar la dependencia.
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.61", features = [
+    "Win32_Foundation",
+    "Win32_System_DataExchange",
+    "Win32_System_Memory",
+    "Win32_UI_Input_KeyboardAndMouse",
+    # M7: mini player no activable (WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW).
+    "Win32_UI_WindowsAndMessaging",
+] }
+# "Start with Windows" (M6): clave Run del registro de forma ergonómica y segura.
+# El acceso al registro vía la crate `windows` es verboso y `unsafe`; `winreg`
+# lo resuelve en unas líneas seguras.
+winreg = "0.52"
+
+# Guía de optimización: https://tauri.app/concept/size/#cargo-configuration
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+panic = "abort"
+strip = true
