@@ -1,155 +1,169 @@
-# YappyLike
+# YappyLike — Offline text-to-speech for Windows
 
-Utilidad residente para **Windows 11** que **lee en voz alta el texto que tengas
-seleccionado** con un atajo global. Funciona **100 % en local** con un motor TTS
-propio (Supertonic): sin nube, sin telemetría, sin peticiones de red tras la
-descarga inicial del modelo. **Tu texto nunca sale de tu equipo.**
+YappyLike is a free, local-first Windows desktop app that reads selected text
+aloud with a global keyboard shortcut. It is an **offline text-to-speech (TTS)
+reader for Windows 10/11**: your text stays on your computer, there is no cloud
+API, no telemetry, and no account required after the voice model is downloaded.
 
-Selecciona texto en cualquier app (navegador, Word, PDF, VS Code, Discord…),
-pulsa **`Ctrl + Shift + Espacio`** y escúchalo.
+Select text in a browser, PDF, Word, VS Code, Discord, or any other Windows app,
+then press **`Ctrl + Shift + Space`** to hear it. YappyLike runs quietly in the
+system tray and uses the local [Supertonic](https://github.com/supertone-inc/supertonic)
+TTS engine through ONNX Runtime.
 
----
+> YappyLike is currently distributed as source code and Windows x64 build
+> artifacts. The installer is unsigned; see the SmartScreen note below.
 
-## Requisitos
+## YappyLike en español
 
-- **Windows 11 x64** (funciona también en Windows 10 x64 reciente).
-- **WebView2 Runtime** — presente por defecto en Windows 11. El **instalador lo
-  instala automáticamente** si falta. Para la versión **portable** debe estar ya
-  instalado (viene con Edge / Windows Update; también:
-  <https://developer.microsoft.com/microsoft-edge/webview2/>).
-- **~400 MB de espacio** para el modelo de voz, que se descarga en el **primer
-  arranque** (una sola vez).
+YappyLike es una aplicación de escritorio para **leer texto seleccionado en voz
+alta en Windows**, con un atajo de teclado global. Funciona de forma local y
+privada: no sube tu texto a la nube, no usa telemetría y no necesita una cuenta.
 
-No necesitas Python, Node, Rust ni terminal para usar la app.
+Selecciona texto en el navegador, un PDF, Word, VS Code, Discord u otra
+aplicación de Windows y pulsa **`Ctrl + Shift + Espacio`**. La aplicación queda
+en la bandeja del sistema y utiliza el motor TTS local
+[Supertonic](https://github.com/supertone-inc/supertonic) mediante ONNX Runtime.
 
----
+## Features / Funciones
 
-## Instalación (instalador)
+- **Global hotkey / Atajo global:** read selected text from almost any Windows app.
+- **Local TTS / Voz local:** CPU inference with Supertonic; no speech cloud service.
+- **Privacy-first / Privacidad:** selected text is processed locally and is not uploaded.
+- **Tray app / Bandeja del sistema:** stays resident without occupying the taskbar.
+- **Streaming playback / Reproducción progresiva:** long text is split into chunks and starts playing as it is synthesized.
+- **Clipboard support / Portapapeles:** reads copied text when direct selection capture is unavailable.
+- **WAV export / Exportación WAV:** export the current text as a WAV file.
+- **Configurable voices / Voces configurables:** M1–M5 and F1–F5, speed, language, volume, output device, and hotkeys.
+- **Portable mode / Modo portable:** keep configuration, logs, and downloaded models beside the executable.
+- **Windows-native desktop app:** built with Tauri 2, Rust, TypeScript, and Vite; no Electron.
 
-1. Descarga **`YappyLike_Setup_x64_v<versión>.exe`** (p. ej.
-   `YappyLike_Setup_x64_v0.2.0.exe`).
-2. Ejecútalo. Es una **instalación por usuario** (no pide permisos de
-   administrador) e instala en `%LOCALAPPDATA%\YappyLike`.
+## Default shortcuts / Atajos predeterminados
 
-### ⚠️ Aviso de SmartScreen (ejecutable sin firmar)
-
-El instalador **no está firmado digitalmente**, así que Windows SmartScreen
-mostrará un aviso azul del tipo *«Windows protegió tu PC»*. Es normal en apps sin
-certificado de firma (que es de pago). Para continuar:
-
-1. Pulsa **«Más información»** (*More info*).
-2. Pulsa **«Ejecutar de todas formas»** (*Run anyway*).
-
-Si prefieres no fiarte, **compila desde el código** (ver más abajo) y obtendrás el
-mismo binario a partir de las fuentes.
-
-### Primer arranque
-
-Al abrir la app por primera vez aparece la ventana **Bienvenido a YappyLike** con
-una barra de progreso que descarga el modelo de voz (~400 MB). Al terminar, la app
-queda **residente en la bandeja del sistema** (icono junto al reloj); no ocupa la
-barra de tareas.
-
----
-
-## Uso
-
-Atajos por defecto (configurables en *Ajustes → Atajos*):
-
-| Atajo | Acción |
+| Shortcut / Atajo | Action / Acción |
 |---|---|
-| `Ctrl + Shift + Espacio` | Leer la selección actual |
-| `Ctrl + Shift + P` | Pausar / Reanudar |
-| `Ctrl + Shift + S` | Detener |
-| `Ctrl + Shift + O` | Abrir Ajustes |
+| `Ctrl + Shift + Space` | Read selected text / Leer selección |
+| `Ctrl + Shift + P` | Pause or resume / Pausar o reanudar |
+| `Ctrl + Shift + S` | Stop / Detener |
+| `Ctrl + Shift + O` | Open settings / Abrir ajustes |
 
-Al leer aparece un **mini reproductor** flotante (esquina inferior derecha) con
-pausa/stop/cerrar. **No roba el foco**, así que no interrumpe lo que estés
-haciendo. El icono de bandeja ofrece las mismas acciones y *Salir*.
+All shortcuts can be changed in **Settings → Hotkeys** / **Ajustes → Atajos**.
 
-La app es **residente**: cerrar la ventana de Ajustes (la **X**) la **oculta a la
-bandeja**, no cierra el programa. Para cerrar YappyLike del todo, **clic derecho en
-el icono de la bandeja → Exit**.
+## Requirements / Requisitos
 
-En **Ajustes** puedes cambiar la voz (`M1`..`M5`, `F1`..`F5`), el idioma, la
-velocidad, el volumen, el dispositivo de salida y los atajos.
+- Windows 11 x64, or a recent Windows 10 x64 installation.
+- [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/).
+  Windows 11 normally includes it; the installer downloads it when needed.
+- Approximately **400 MB** of disk space for the local voice model, downloaded on
+  first use.
 
-### Iniciar con Windows
+The end user does not need Python, Node.js, Rust, or a terminal to run the
+installer. The portable ZIP requires WebView2 to already be installed.
 
-En **Ajustes → General → «Iniciar con Windows»**. La app se registra en
-`HKCU\Software\Microsoft\Windows\CurrentVersion\Run` (por usuario, sin
-administrador) y arranca minimizada en la bandeja.
+## Installation / Instalación
 
----
+Download the versioned Windows x64 installer, for example
+`YappyLike_Setup_x64_v0.3.0.exe`, and run it. The installer uses a per-user
+installation under `%LOCALAPPDATA%\YappyLike` and does not require administrator
+privileges.
 
-## Versión portable
+On first launch, YappyLike downloads the voice model once. After that, voice
+synthesis works locally without network requests.
 
-`YappyLike_Portable_x64.zip` — descomprímelo en cualquier carpeta (una memoria
-USB, por ejemplo) y ejecuta **`YappyLike.exe`**. Estructura:
+### Windows SmartScreen
 
-```
-YappyLike_Portable_x64\
+The current installer is not digitally signed. Windows may show a blue
+SmartScreen warning. If you trust the downloaded file, choose **More info → Run
+anyway**. You can also build the application yourself from source using the
+instructions below.
+
+### Portable mode / Modo portable
+
+Extract `YappyLike_Portable_x64_v0.3.0.zip` and run `YappyLike.exe`:
+
+```text
+YappyLike_Portable_x64/
 ├─ YappyLike.exe
-├─ PORTABLE        ← marcador: activa el modo portable
-├─ models\         ← el modelo se descarga aquí en el primer arranque
-├─ config\         ← configuración (config.toml)
-└─ logs\           ← registros
+├─ PORTABLE       marker file
+├─ models/        downloaded voice model
+├─ config/        config.toml
+└─ logs/          runtime logs
 ```
 
-En modo portable **la app solo escribe dentro de su propia carpeta** (config,
-modelo y logs), sin tocar `%APPDATA%` ni el registro (salvo que actives «Iniciar
-con Windows», que sí usa el registro por diseño). El marcador es el archivo vacío
-`PORTABLE` junto al ejecutable; si lo borras, la app vuelve al modo normal
-(`%APPDATA%\YappyLike`).
+Portable mode stores application data in its own directory instead of
+`%APPDATA%`. Enabling **Start with Windows / Iniciar con Windows** intentionally
+uses the per-user Windows `Run` registry key.
 
-> **Nota:** la versión portable **requiere WebView2 ya instalado** (ver
-> Requisitos). El instalador normal se encarga de ello; el ZIP no.
+## Privacy / Privacidad
 
----
+- Selected and copied text is processed on the local computer.
+- There is no telemetry, analytics, login, or cloud speech API.
+- The only network operation is the first-run download of the voice model.
+- Runtime configuration and logs are local and are excluded from version control.
 
-## Privacidad
+See [SECURITY.md](SECURITY.md) for vulnerability reporting and credential
+handling guidance.
 
-- Todo el procesamiento (síntesis de voz) ocurre **en tu equipo**.
-- La **única** conexión de red es la **descarga del modelo** en el primer
-  arranque. Después, la app **no hace ninguna petición de red**.
-- **Sin telemetría ni analítica.** Tu texto nunca se envía a ningún servidor.
+## Build from source / Compilar desde el código
 
----
+### Prerequisites / Dependencias de desarrollo
 
-## Compilar desde el código
+- Rust stable with the MSVC toolchain.
+- Node.js 18 or newer and npm.
+- Windows prerequisites for [Tauri](https://tauri.app/start/prerequisites/).
 
-Requisitos: [Rust](https://rustup.rs/) (stable, toolchain MSVC), [Node.js](https://nodejs.org/)
-18+ y las [dependencias de Tauri en Windows](https://tauri.app/start/prerequisites/).
+### Build / Compilación
 
 ```bash
 npm install
+npm run build
 npm run tauri build
 ```
 
-Salidas en `src-tauri/target/release/`:
-
-- Ejecutable: `yappylike.exe` (el instalado se llama `YappyLike.exe`).
-- Instalador NSIS: `bundle/nsis/YappyLike_<versión>_x64-setup.exe`.
-
-Para renombrar los artefactos a los nombres de distribución y generar el ZIP
-portable:
+To create the versioned installer and portable ZIP:
 
 ```powershell
 pwsh scripts/package_release.ps1
 ```
 
-Deja en `dist-release/` los ficheros **versionados**
-`YappyLike_Setup_x64_v<versión>.exe` y `YappyLike_Portable_x64_v<versión>.zip`
-(la versión sale de `tauri.conf.json`, así que builds de versiones distintas no se
-pisan entre sí).
+The release artifacts are written to `dist-release/`. The Tauri executable is
+generated under `src-tauri/target/release/`.
 
----
+## Technical overview / Resumen técnico
 
-## Desinstalar
+YappyLike is a Windows-first Tauri 2 application with a Rust backend and a
+vanilla TypeScript/Vite frontend. The speech pipeline uses Supertonic model
+assets and ONNX Runtime with CPU execution. It captures selected text through
+the Windows clipboard, chunks long text, synthesizes progressively, and plays
+audio through the selected Windows output device.
 
-- **Instalador:** *Configuración → Aplicaciones → YappyLike → Desinstalar* (o el
-  desinstalador en `%LOCALAPPDATA%\YappyLike`).
-- **Datos:** el modelo y la config viven en `%APPDATA%\YappyLike`
-  (modo normal) o en la carpeta portable. Bórralos a mano si quieres eliminar todo
-  rastro. Si activaste «Iniciar con Windows», el valor `YappyLike` en la clave
-  `Run` se elimina al desactivarlo en Ajustes o al desinstalar.
+The repository includes focused modules for selection capture, global hotkeys,
+text chunking, model downloads and SHA-256 verification, speech synthesis,
+audio playback, settings persistence, tray integration, and the floating mini
+player.
+
+## Project status / Estado del proyecto
+
+The current codebase is version **0.3.0**. It includes clipboard reading, WAV
+export, pronunciation replacements, configurable settings, tray operation,
+portable packaging, and local Supertonic speech synthesis.
+
+## Uninstall / Desinstalar
+
+Uninstall the application from **Windows Settings → Apps → YappyLike**. The
+downloaded model, configuration, and logs may remain in `%APPDATA%\YappyLike`
+until removed manually. Portable mode keeps them in the portable directory.
+
+## License / Licencia
+
+See [docs/LICENSING.md](docs/LICENSING.md) for the model and dependency license
+information. The voice model is downloaded separately and is not bundled in this
+repository.
+
+## Keywords / Palabras clave
+
+offline text to speech, local TTS, private text reader, Windows screen reader,
+read selected text aloud, global hotkey text reader, Windows accessibility,
+Spanish text to speech, English text to speech, offline voice synthesis,
+Supertonic TTS, ONNX Runtime, Rust Tauri desktop app, portable Windows app,
+lector de texto en voz alta, lectura de selección, síntesis de voz local,
+aplicación Windows privada, lector de PDF y navegador.
