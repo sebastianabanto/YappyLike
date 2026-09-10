@@ -1,5 +1,12 @@
 # YappyLike — Offline text-to-speech for Windows
 
+[![Version](https://img.shields.io/badge/version-0.3.0-2563eb.svg)](https://github.com/sebastianabanto/YappyLike)
+[![Platform](https://img.shields.io/badge/platform-Windows%2010%20%2F%2011-0078d4.svg)](https://github.com/sebastianabanto/YappyLike#requirements--requisitos)
+[![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri%202-24c8db.svg)](https://tauri.app/)
+[![Backend](https://img.shields.io/badge/backend-Rust-dea584.svg)](https://www.rust-lang.org/)
+[![Frontend](https://img.shields.io/badge/frontend-TypeScript-3178c6.svg)](https://www.typescriptlang.org/)
+[![Last commit](https://img.shields.io/github/last-commit/sebastianabanto/YappyLike?label=last%20commit)](https://github.com/sebastianabanto/YappyLike/commits/master/)
+
 YappyLike is a free, local-first Windows desktop app that reads selected text
 aloud with a global keyboard shortcut. It is an **offline text-to-speech (TTS)
 reader for Windows 10/11**: your text stays on your computer, there is no cloud
